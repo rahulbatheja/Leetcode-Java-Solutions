@@ -1,76 +1,63 @@
 class MaxStack {
 
 
-    private final Stack<Integer> auxStack;
-    //private final Stack<Integer> maxStack;
+    private final Stack<Integer> maxStack;
+    private final Stack<Integer> actualStack;
 
     /**
      * initialize your data structure here.
      */
     public MaxStack() {
-        this.auxStack = new Stack<>();
-        // this.maxStack = new Stack<>();
+        this.actualStack = new Stack<>();
+        this.maxStack = new Stack<>();
+
     }
 
-    public void push(int x) {
-        auxStack.push(x);
+    public void push(int val) {
+
+        if (actualStack.isEmpty()) {
+            this.actualStack.push(val);
+            this.maxStack.push(val);
+        } else {
+            this.actualStack.push(val);
+            if (this.maxStack.peek() < val)
+                this.maxStack.push(val);
+            else this.maxStack.push(this.maxStack.peek());
+
+        }
 
     }
 
     public int pop() {
-        return auxStack.pop();
+        this.maxStack.pop();
+        return this.actualStack.pop();
     }
 
     public int top() {
-        return auxStack.peek();
+        return this.actualStack.peek();
     }
 
     public int peekMax() {
-
-        Stack<Integer> tempStack = new Stack<>();
-        int maxElement = Integer.MIN_VALUE;
-        while (!this.auxStack.isEmpty()) {
-            int poppedElement = this.auxStack.pop();
-            maxElement = Math.max(maxElement, poppedElement);
-            tempStack.push(poppedElement);
-        }
-        while (!tempStack.isEmpty()) {
-            auxStack.push(tempStack.pop());
-        }
-
-        return maxElement;
+        return this.maxStack.peek();
     }
 
     public int popMax() {
+        int maxElement = this.maxStack.peek();
 
-        Stack<Integer> tempStack = new Stack<>();
-        int maxElement = Integer.MIN_VALUE;
-        while (!this.auxStack.isEmpty()) {
-            int poppedElement = this.auxStack.pop();
-            maxElement = Math.max(maxElement, poppedElement);
-            tempStack.push(poppedElement);
+        Stack<Integer> buffer = new Stack<>();
+        while (!this.actualStack.isEmpty() && this.actualStack.peek() != maxElement) {
+            buffer.push(this.pop());
+        }
+        if (!this.actualStack.isEmpty()) {
+            this.pop();
         }
 
-        int countOfMaxElement = 0;
-        for (Integer currentNumber : tempStack) {
-            if (currentNumber == maxElement)
-                countOfMaxElement++;
-        }
-
-        while (!tempStack.isEmpty()) {
-            int poppedElement = tempStack.pop();
-            if (poppedElement == maxElement) {
-                if (countOfMaxElement > 1) {
-                    this.auxStack.push(poppedElement);
-                    countOfMaxElement--;
-                }
-
-            } else
-                this.auxStack.push(poppedElement);
-
+        while (!buffer.isEmpty()) {
+            this.push(buffer.pop());
         }
 
         return maxElement;
+
     }
 }
 
